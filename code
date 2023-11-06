@@ -1,0 +1,219 @@
+import numpy as np 
+import matplotlib.pyplot as plt
+fichier_path="C:/Users/siware/Desktop/BA/python/projet/patient.txt"
+DPatient = {}
+fichier_path2="C:/Users/siware/Desktop/BA/python/projet/rdv.txt"
+DRendezvous = {}
+DMedicament={}
+
+
+def remplir():
+    try:
+        f=open(fichier_path,"x")
+    except:
+        print("fichier existant")
+def ajouter():
+    DPatient["Cin"] = int(input("donner le cin: "))
+    DPatient["nom"] = str(input("donner le nom: "))
+    DPatient["prenom"] = str(input("donner le prénom: "))
+    DPatient["sexe"] = str(input("donner le sexe: "))
+    DPatient["age"] = int(input("donner l'age: "))
+    f=open(fichier_path,"a")
+    for valeur in DPatient.values():
+        f.write(str(valeur))
+        f.write(";")
+    f.write("\n")
+    f.close()
+def supprimer():
+    with open(r"C:/Users/siware/Desktop/BA/python/projet/patient.txt", 'r') as fp:
+        lines = fp.readlines()
+    cin = input("donner cin de patient a suprimer") 
+    with open(r"C:/Users/siware/Desktop/BA/python/projet/patient.txt", 'w') as fp:
+        for line in lines:
+            if cin not in line.strip("\n"):
+                fp.write(line)
+def ajouter_rdv():
+    DRendezvous["Id"] = int(input("donner l'identifiant du patient: ")) 
+    DRendezvous["date"] = str(input("donner la date: "))
+    DRendezvous["heure"] = str(input("donner l'heure: "))
+    for valeur in DRendezvous.values():
+        f=open(fichier_path2,"a")
+        f.write(str(valeur))
+        f.write(";")
+    f.write("\n")
+    f.close()
+    
+
+def annuler_rdv(): 
+    with open(r"C:/Users/siware/Desktop/BA/python/projet/rdv.txt", 'r') as fp:
+        lines = fp.readlines()
+    cin= input("donner l'id de  rendez vous à annuler: ") #ajouter les cordonnées du patient à supprimer
+    with open(r"C:/Users/siware/Desktop/BA/python/projet/rdv.txt", 'w') as fp:
+        for line in lines:
+            if cin not in line.strip("\n"):
+                fp.write(line)
+def modifier_rdv() :
+    with open(r"C:/Users/siware/Desktop/BA/python/projet/rdv.txt", 'r') as fp:
+        lines = fp.readlines()
+    cin= input("donner l'id de  rendez vous à modifier: ") #ajouter cin du patient a modifier
+    with open(r"C:/Users/siware/Desktop/BA/python/projet/rdv.txt", 'w') as fp:
+        for line in lines:
+            if cin in line.strip("\n"):
+                DRendezvous["date"] = str(input("donner la date: "))
+                DRendezvous["heure"] = str(input("donner l'heure: "))
+                fp.write(cin)
+                fp.write(";")
+                fp.write(DRendezvous["date"])
+                fp.write(";")
+                fp.write(DRendezvous["heure"])
+                fp.write(";")
+                fp.write("\n")
+            else :
+                fp.write(line)
+                
+def creerOrdanance():
+    nom=""
+    prenom=""
+    date=""
+    heure=""
+    
+    cin = str(input("donner cin: "))
+    with open(fichier_path, 'r') as fp:
+        lines = fp.readlines()
+        for line in lines:
+            if cin in line:
+                x = line.split(";")  
+                nom=x[1]
+                prenom=x[2]
+                filepath= 'C:/Users/siware/Desktop/BA/python/projet/'+x[1]+'_'+x[2]+'.txt'
+    
+    with open(fichier_path2, 'r') as fp:
+        lines = fp.readlines()
+        for line in lines:
+            if cin in line.strip("\n"):
+                y = line.split(";")
+                date=y[1]
+                heure=y[2]
+    with open(filepath, 'w') as fp:
+        fp.write(cin)
+        fp.write("\t")
+        fp.write(nom)
+        fp.write("\t")
+        fp.write(prenom)
+        fp.write("\t")
+        fp.write(date)
+        fp.write("\t")
+        fp.write(heure)
+        fp.write("\n")
+    med=int(input("donner le nbr de medicaments:"))
+    for i in range(med): 
+        DMedicament["medicament"] = str(input("donner le nom du medicament: ")) 
+        DMedicament["quantité"] = str(input("donner la quantité du medicament: "))
+        DMedicament["duree"] = str(input("donner la durée de traitement:  "))+"jours"
+        for valeur in DMedicament.values():
+            f=open(filepath, "a")
+            f.write(str(valeur))
+            f.write("\t")
+        f.write("\n")
+        f.close()
+    filepath2='C:/Users/siware/Desktop/BA/python/projet/'+'historique_'+nom+'.txt'
+    with open(filepath2, 'a') as fp: 
+        with open(filepath, 'r') as fc:
+            lines = fc.readlines()
+            for line in lines:
+                fp.write(line)
+            fp.write("--------------------------------------")
+        fp.write("\n")   
+        
+def historique():
+    nom=str(input("donner le nom de patient:"))
+    filepath2='C:/Users/siware/Desktop/BA/python/projet/'+'historique_'+nom+'.txt'
+    with open (filepath2, 'r') as fp:
+        lines= fp.readlines()
+        for line in lines:
+            print(line)
+
+def courbe_mois():
+    liste=[]
+    with open(fichier_path2, 'r') as fp:
+        lines = fp.readlines()
+        for line in lines:
+            y = line.split(";")
+            date=y[1]
+            x=date.split("/")
+            liste.append(int(x[1]))
+    range = (1 ,12)
+    # plotting a histogram
+    plt.hist(liste, bins=None, color = 'pink',edgecolor="black",histtype = 'bar', rwidth = 1, align = 'mid')
+    # x-axis label
+    plt.xlabel('mois')
+    # frequency label
+    plt.ylabel('No. of rdv')
+    # plot title
+    plt.title('Courbe des mois')
+    # function to show the plot
+    plt.show()
+    
+def courbe_années():
+    liste=[]
+    with open(fichier_path2, 'r') as fp:
+        lines = fp.readlines()
+        for line in lines:
+            y = line.split(";")
+            annee=y[1]
+            x=annee.split("/")
+            liste.append(int(x[2]))
+    # plotting a histogram
+    range = (2010,2030)
+    plt.hist(liste, bins=None, color = 'pink',edgecolor="black",histtype = 'bar', rwidth = 1, align = 'mid')
+    # x-axis label
+    plt.xlabel('année')
+    # frequency label
+    plt.ylabel('No. of rdv')
+    # plot title
+    plt.title('Courbe des années')
+    # function to show the plot
+    plt.show()
+
+def menu():
+    print("***************************************************************")
+    print("*1- Créer fichier patient.txt")
+    print("*2- Ajouter un patient")
+    print("*3- Supprimer un patient")
+    print("*4- Ajouter un rendez-vous")
+    print("*5- Annuler un rendez-vous")
+    print("*6- Modifier un rendez-vous")
+    print("*7- Créer une ordonnance")
+    print("*8- Historique patient")
+    print("*9- Tracer la courbe de nombre de consulation pour chaque mois")
+    print("*10- Tracer la courbe de nombre de consulation pour chaque année")
+    print("**0- Quitter")
+    print("***************************************************************")
+menu()
+option=int(input("Enter your option: "))
+while option != 0 :
+    if option == 1:
+        remplir()
+    elif option ==2:
+        ajouter()
+    elif option==3:
+        supprimer()
+    elif option==4:
+        ajouter_rdv()
+    elif option ==5 :
+        annuler_rdv()
+    elif option==6:
+        modifier_rdv()
+    elif option==7:
+        creerOrdanance()
+    elif option==8:
+        historique()
+    elif option==9:
+        courbe_mois()
+    elif option==10:
+        courbe_années()
+    else:
+        print("Invalid option")
+    menu()
+    option=int(input("Enter your option: "))
+    
